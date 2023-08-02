@@ -7,9 +7,57 @@ const xlsx = require('xlsx');
 const fs = require('fs');
 
 const Product = require("../models/product");
-const excelReader = require('../helpers/excel-reader');
+const multer      = require('multer');  
+//let upload = "C:/Users/Dell/Desktop/ecommerce_backend/public/excelUploads/index.html"
+
 const filePath = 'C:/Users/Dell/Desktop/ecommerce_backend/file/test.xlsx';
 
+// 2.upload excel file to db
+
+var storage = multer.diskStorage({  
+  destination:(req,file,cb)=>{  
+  cb(null,'./public/excelUploads');  
+  },  
+  filename:(req,file,cb)=>{  
+  cb(null,file.originalname);  
+  }  
+  });  
+const upload = multer({dest: 'public/excelUploads'});
+let type = upload.single('file');
+
+router.post('/uploadFile',type, (req,res)=>{
+
+ 
+   
+     // console.log(req.file);
+
+      const title = req.body.title;
+      const description = req.body.description;
+      const price = req.body.price;
+      const subCategory = req.body.subCategory;
+      const category = req.body.category;
+      const discount = req.body.discount;
+    
+
+      let newProduct = new Product({
+          title,
+          description,
+          price,
+          subCategory,
+          category,
+          discount,
+          quantity
+
+      })
+      res.send({
+        status: 200,
+        msg: "Products added successfully!",
+        result: newProduct,
+      });
+  
+
+  
+});
 
 router.get('/getAllProducts', async (req, res) => {
  
