@@ -13,7 +13,7 @@ router.post("/register", async (req, res) => {
       password: req.body.password,
       address: req.body.address,
       zip: req.body.zip,
-      isAdmin: req.body.isAdmin
+      isAdmin: req.body.isAdmin,
     });
 
     user = await user.save();
@@ -30,36 +30,41 @@ router.post("/register", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.send({
-        status: 500,
-        msg: "Internal Server Error!"
-      });
+      status: 500,
+      msg: "Internal Server Error!",
+    });
   }
 });
 
 router.post("/login", async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  const secret = "test";
 
-  if (!user) {
-    return res.status(400).send("User not found");
+  try {
+    
+    const user = await User.findOne({
+      email: req.body.email,
+      password: req.body.password,
+    });
+
+    if (!user) {
+      res.status(401).send({
+        status: 401,
+        msg: "Login not successful",
+        error: "User not found",
+      });
+    } else {
+      res.status(200).send({
+        status:200,
+        msg: "Login successful!",
+      
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.send({
+      status: 500,
+      msg: "Internal Server Error!",
+    });
   }
-
-  if (user && bcrypt.compareSync(req.body.password, user.password)) {
-    const token = jwt.sign(
-      {
-        userID: user.id,
-        isAdmin: user.isAdmin,
-      },
-      secret,
-      { expiresIn: "1d" }
-    );
-    res.status(200).send({ user: user.email, token: token });
-  } else {
-    res.status(400).send("Password is mismatch");
-  }
-
-  return res.status(200).send(user);
 });
-
 
 module.exports = router;
