@@ -6,8 +6,11 @@ const mongoose = require('mongoose');
 app.use(express.json());
 
 const userRoutes = require('./routes/user');
+const productRoute = require('./routes/product');
 
 app.use('/users', userRoutes);
+app.use('/products',productRoute);
+
 
 mongoose.connect("mongodb://localhost:27017/ecommerce",{
         useNewUrlParser:true
