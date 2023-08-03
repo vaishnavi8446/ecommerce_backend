@@ -14,8 +14,7 @@ const productSchema = mongoose.Schema({
         default: '0'
     },
     category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+        type: String,
         required: true,
     },
     subCategory: {
@@ -26,9 +25,9 @@ const productSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
-    dateCreated: {
-        type: Date,
-        default: Date.now
+    availability:{
+        type:String,
+        default: "Available"
     }
 })
 
