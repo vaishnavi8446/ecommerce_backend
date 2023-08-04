@@ -36,6 +36,9 @@ var upload = multer({ storage: storage });
 app.use(express.static(__dirname + "/public/excelUploads"));
 app.use("/uploads", express.static("uploads"));
 
+
+//2. to upload products in bulk using excel -seller
+
 app.post("/uploadFile", upload.single("uploadfile"), function (req, res, next) {
   // req.file is the `profile-file` file
   // req.body will hold the text fields, if there were any

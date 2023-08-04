@@ -1,59 +1,14 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const router = express.Router();
 const xlsx = require("xlsx");
 
 const fs = require("fs");
 
 const Product = require("../models/product");
-const multer = require("multer");
-//let upload = "C:/Users/Dell/Desktop/ecommerce_backend/public/excelUploads/index.html"
 
 const filePath = "C:/Users/Dell/Desktop/ecommerce_backend/file/test.xlsx";
 
-// 2.upload excel file to db
-
-// var storage = multer.diskStorage({
-//   destination:(req,file,cb)=>{
-//   cb(null,'./public/excelUploads');
-//   },
-//   filename:(req,file,cb)=>{
-//   cb(null,file.originalname);
-//   }
-//   });
-// const upload = multer({dest: 'public/excelUploads'});
-// let type = upload.single('file');
-
-// router.post('/uploadFile',type, (req,res)=>{
-
-//      // console.log(req.file);
-
-//       const title = req.body.title;
-//       const description = req.body.description;
-//       const price = req.body.price;
-//       const subCategory = req.body.subCategory;
-//       const category = req.body.category;
-//       const discount = req.body.discount;
-
-//       let newProduct = new Product({
-//           title,
-//           description,
-//           price,
-//           subCategory,
-//           category,
-//           discount,
-//           quantity
-
-//       })
-//       res.send({
-//         status: 200,
-//         msg: "Products added successfully!",
-//         result: newProduct,
-//       });
-
-// });
-
+//3. to see all my uploaded products -seller
 router.get("/getAllProducts", async (req, res) => {
   function convertExcelFileToJsonUsingXlsx() {
     // File Reading
@@ -90,6 +45,7 @@ router.get("/getAllProducts", async (req, res) => {
         status: 200,
         msg: "Products list successfully listed!",
         result: data,
+        count: data.length,
       });
     } catch (err) {
       console.error(err);
@@ -101,52 +57,92 @@ router.get("/getAllProducts", async (req, res) => {
   }
 });
 
+
+//5.  to mark a product as *Out of Stock* and *Available* 
+
 router.put("/updateProductStatus/:id", async (req, res) => {
   try {
-    //  let isAdminStatus = Product.find({isAdmin:1});
-      const isAdminStatus = (req, res) => {
-        Product.find({isAdmin:1},(err, data) => {
-          if (err) {
-            res.send(err);
-          }
-          res.json(data);
-        });
-        console.log(res);
-      };
-      
-    console.log("isAdminStatus",isAdminStatus);
+    if (!req.body) {
+      res.status(400).send({
+        message: "Data to update can not be empty!",
+      });
+    }
 
-      if(isAdminStatus ==1 ){  
-      if (!req.body) {
-        res.status(400).send({
-          message: "Data to update can not be empty!",
-        });
-      }
+    const id = req.params.id;
 
-      const id = req.params.id;
-
-      await Product.findByIdAndUpdate(id, {
-        availability: req.body.availability,
-      })
-        .then((data) => {
-          if (!data) {
-            res.status(404).send({
-              message: `Product not found.`,
-            });
-          } else {
-    
-            res.send({
-              message: "Product updated successfully!",
-              result: data,
-            });
-          }
-        })
-        .catch((err) => {
-          res.status(500).send({
-            message: err.message,
+    await Product.findByIdAndUpdate(id, {
+      availability: req.body.availability,
+    })
+      .then((data) => {
+        if (!data) {
+          res.status(404).send({
+            message: `Product not found.`,
           });
+        } else {
+          res.send({
+            message: "Product updated successfully!",
+            result: data,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message,
         });
-      }
+      });
+  } catch (err) {
+    console.error(err);
+    res.send({
+      status: 500,
+      msg: "Internal Server Error!",
+    });
+  }
+});
+
+//3. to see all my uploaded products -seller
+router.get("/getProductsList", async (req, res) => {
+  try {
+    const productCount = await Product.countDocuments();
+    const productsList = await Product.find();
+    if (!productCount && productsList) {
+      return res.status(500).send({
+        status: 500,
+        msg: "Something went wrong!",
+      });
+    }
+    res.status(200).send({
+      msg: "Count fetched successfully!",
+      productCount: productCount,
+      result: productsList,
+    });
+  } catch (err) {
+    res.send({
+      status: 500,
+      msg: "Internal Server Error!",
+    });
+  }
+});
+
+//2.To see all the *Available* products on the platform -buyer
+
+router.get("/getBuyerProductsList", async (req, res) => {
+  try {
+    const productsList = await Product.find({ availability: "Available" });
+    const productsListCount = await Product.find({
+      availability: "Available",
+    }).count();
+
+    if (!productsList) {
+      return res.status(500).send({
+        status: 500,
+        msg: "Something went wrong!",
+      });
+    }
+    res.status(200).send({
+      msg: "Buyer product list fetched successfully!",
+      count: productsListCount,
+      result: productsList,
+    });
   } catch (err) {
     console.error(err);
     res.send({

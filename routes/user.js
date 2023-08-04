@@ -5,6 +5,8 @@ const router = express.Router();
 
 const User = require("../models/user");
 
+//1.To register on the platform - using email and password  -seller & buyer
+
 router.post("/register", async (req, res) => {
   try {
     let user = new User({
@@ -13,7 +15,7 @@ router.post("/register", async (req, res) => {
       password: req.body.password,
       address: req.body.address,
       zip: req.body.zip,
-      isAdmin: req.body.isAdmin
+      isAdmin: req.body.isAdmin,
     });
 
     user = await user.save();
@@ -30,11 +32,13 @@ router.post("/register", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.send({
-        status: 500,
-        msg: "Internal Server Error!"
-      });
+      status: 500,
+      msg: "Internal Server Error!",
+    });
   }
 });
+
+// 2.login through the platform using email and password -buyer & seller
 
 router.post("/login", async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
@@ -60,6 +64,5 @@ router.post("/login", async (req, res) => {
 
   return res.status(200).send(user);
 });
-
 
 module.exports = router;
