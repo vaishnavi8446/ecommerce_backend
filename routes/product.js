@@ -103,7 +103,20 @@ router.get("/getAllProducts", async (req, res) => {
 
 router.put("/updateProductStatus/:id", async (req, res) => {
   try {
-    
+    //  let isAdminStatus = Product.find({isAdmin:1});
+      const isAdminStatus = (req, res) => {
+        Product.find({isAdmin:1},(err, data) => {
+          if (err) {
+            res.send(err);
+          }
+          res.json(data);
+        });
+        console.log(res);
+      };
+      
+    console.log("isAdminStatus",isAdminStatus);
+
+      if(isAdminStatus ==1 ){  
       if (!req.body) {
         res.status(400).send({
           message: "Data to update can not be empty!",
@@ -133,7 +146,7 @@ router.put("/updateProductStatus/:id", async (req, res) => {
             message: err.message,
           });
         });
-
+      }
   } catch (err) {
     console.error(err);
     res.send({
