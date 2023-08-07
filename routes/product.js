@@ -57,8 +57,7 @@ router.get("/getAllProducts", async (req, res) => {
   }
 });
 
-
-//5.  to mark a product as *Out of Stock* and *Available* 
+//5.  to mark a product as *Out of Stock* and *Available*
 
 router.put("/updateProductStatus/:id", async (req, res) => {
   try {
@@ -128,8 +127,14 @@ router.get("/getProductsList", async (req, res) => {
 router.get("/getBuyerProductsList", async (req, res) => {
   try {
     const productsList = await Product.find({ availability: "Available" });
+    // const productsList = await Product.find({
+    //   isAdmin: { $in: 1 },
+    //   availability: { $in: "Available" },
+    // });
+
     const productsListCount = await Product.find({
-      availability: "Available",
+      isAdmin: { $in: 1 },
+      availability: { $in: "Available" },
     }).count();
 
     if (!productsList) {
@@ -145,6 +150,35 @@ router.get("/getBuyerProductsList", async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    res.send({
+      status: 500,
+      msg: "Internal Server Error!",
+    });
+  }
+});
+
+//3. to filter the products by all the *attributes* mentioned above. -both
+
+router.get("/filterProducts", async (req, res) => {
+  try {
+    const productsList = await Product.find();
+
+    const filters = req.query;
+    const filteredProducts = productsList.filter((attributes) => {
+      let isValid = true;
+      for (let key in filters) {
+        console.log(key, attributes[key], filters[key]);
+        isValid = isValid && attributes[key] == filters[key];
+      }
+      return isValid;
+    });
+    res.send({
+      status: 200,
+      msg: "Filter products displayed successfully!",
+      result: filteredProducts,
+    });
+  } catch (err) {
+    console.log(err);
     res.send({
       status: 500,
       msg: "Internal Server Error!",
