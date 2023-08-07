@@ -28,7 +28,13 @@ const productSchema = mongoose.Schema({
     availability:{
         type:String,
         default: "Available"
-    }
+    },
+    isAdmin:{
+        type: Boolean,
+        required: true
+    },
+    
+
 })
 
 productSchema.virtual('id').get(function () {
