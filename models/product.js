@@ -33,6 +33,14 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         required: true
     },
+    quantity:{
+        type: Number,
+        required: true
+    },
+    createdBy: {
+        type: String,
+        required: true,
+    },
     
 
 })
