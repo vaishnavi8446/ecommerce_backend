@@ -98,7 +98,7 @@ router.put("/updateProductStatus/:id", async (req, res) => {
   }
 });
 
-//3. to see all my uploaded products -seller
+//3. to see all my uploaded products -seller & -buyer
 router.get("/getProductsList", async (req, res) => {
   try {
     const productCount = await Product.countDocuments();
@@ -124,13 +124,9 @@ router.get("/getProductsList", async (req, res) => {
 
 //2.To see all the *Available* products on the platform -buyer
 
-router.get("/getBuyerProductsList", async (req, res) => {
+router.get("/getAvailableBuyerProductsList", async (req, res) => {
   try {
     const productsList = await Product.find({ availability: "Available" });
-    // const productsList = await Product.find({
-    //   isAdmin: { $in: 1 },
-    //   availability: { $in: "Available" },
-    // });
 
     const productsListCount = await Product.find({
       isAdmin: { $in: 1 },
@@ -179,6 +175,54 @@ router.get("/filterProducts", async (req, res) => {
     });
   } catch (err) {
     console.log(err);
+    res.send({
+      status: 500,
+      msg: "Internal Server Error!",
+    });
+  }
+});
+
+//4.to see how much quality is sold , total amount , how much quantity is left in stock -buyer
+
+router.get("/stockList", async (req, res) => {
+  try {
+    const productCount = await Product.countDocuments();
+
+    const leftStockCnt = await Product.find({
+      availability: "Available",
+    }).count();
+
+    const soldStockQuantity = await Product.find({
+      availability: "Out of service",
+    });
+    const soldStockCnt = await Product.find({
+      availability: "Out of service",
+    }).count();
+
+    let obj = soldStockQuantity.map(({ price, discount }) => {
+      let total_amt = price - discount;
+      return total_amt;
+    });
+    let total_amount = 0;
+
+    obj.forEach((num) => {
+      total_amount += num;
+    });
+    console.log(total_amount);
+
+    if (!productCount) {
+      return res.status(500).send({
+        status: 500,
+        msg: "Something went wrong!",
+      });
+    }
+    res.status(200).send({
+      msg: "Fetched successfully!",
+      leftStockCnt: leftStockCnt,
+      soldStockCnt: soldStockCnt,
+      total: total_amount,
+    });
+  } catch (err) {
     res.send({
       status: 500,
       msg: "Internal Server Error!",
