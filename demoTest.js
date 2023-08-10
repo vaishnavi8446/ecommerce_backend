@@ -23,11 +23,8 @@ describe("Test", function () {
   });
 });
 
-/*
- * Test the /POST route
- */
-describe("/POST register", function() {
-  it("it should not register without required fields", function(done) {
+describe("/register", function () {
+  it("it should register with required fields", function (done) {
     chai
       .request("http://localhost:8000")
       .post("/users/register")
@@ -46,20 +43,39 @@ describe("/POST register", function() {
   });
 });
 
-describe("Login API", () => {
-  describe("/users/login", function () {
-    it("responds with status 200", function (done) {
-      chai
-        .request(server)
-        .post("/users/login")
-        .send( {
-            email: "Vaishnavi123@gmail.com",
-            password: "Vaishu@022",
-          })
-        .end(function (err, res) {
-          expect(res).to.have.status(200);
-          done();
-        });
-    });
+describe("/login", function () {
+  it("It should log in user", function (done) {
+    chai
+      .request(server)
+      .post("/users/login")
+      .send({
+        email: "Vaishnavi123@gmail.com",
+        password: "Vaishu@022",
+      })
+      .end(function (err, res) {
+        expect(res).to.have.status(200);
+        done();
+      });
+  });
+});
+
+describe("/cart", function () {
+  it("it should add products to the cart", function (done) {
+    chai
+      .request("http://localhost:8000")
+      .post("/carts/cart")
+      .send({
+        productId: 2,
+        title: "Jeans",
+        description: "Fashion",
+        price: 700,
+        category: "women",
+        subCategory: "",
+        discount: 300,
+      })
+      .end(function (err, res) {
+        expect(res).to.have.status(200);
+        done();
+      });
   });
 });
