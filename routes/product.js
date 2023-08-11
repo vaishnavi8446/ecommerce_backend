@@ -8,6 +8,54 @@ const Product = require("../models/product");
 
 const filePath = "C:/Users/Dell/Desktop/ecommerce_backend/file/test.xlsx";
 
+/**
+ * @swagger
+ * tags:
+ *   name: Products
+ *   description: The products managing API
+ * /products/getProductsList:
+ *   get:
+ *     summary: getProductsList
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Fetched products list successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Some server error
+ *
+ * /products/getAvailableBuyerProductsList:
+ *   get:
+ *     summary: getAvailableBuyerProductsList
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Fetched available products list successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Some server error
+ * 
+ * /products/stockList:
+ *   get:
+ *     summary: stockList
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Fetched left stock list successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Some server error
+ */
+
 //3. to see all my uploaded products -seller
 router.get("/getAllProducts", async (req, res) => {
   function convertExcelFileToJsonUsingXlsx() {

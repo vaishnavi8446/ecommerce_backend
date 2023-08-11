@@ -2,7 +2,79 @@ const express = require("express");
 const router = express.Router();
 const Cart = require("./../models/cart");
 
-router.post("/Cart", async (req, res) => {
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Cart:
+ *       type: object
+ *       required:
+ *         - productId
+ *         - title
+ *         - description
+ *       properties:
+ *         productId:
+ *           type: number
+ *           description: Product id of the cart
+ *           example: 1
+ *         title:
+ *           type: string
+ *           description: Title of the product
+ *           example: Oppo
+ *         description:
+ *            type: string
+ *            description: Description of the product
+ *            example:Phone-8gb
+ *         price:
+ *           type: number
+ *           description: price of the product
+ *           example: 25000
+ *         category:
+ *            type: string
+ *            description: category of the product
+ *            example: Electronics
+ *         subCategory:
+ *            type: string
+ *            description: sub-category of the product
+ *            example: android
+ *         discount:
+ *           type: number
+ *           description: discount of the product
+ *           example: 5000
+ *         modifiedOn:
+ *           type: string
+ *           format: date
+ *           description: The date in which cart was added
+  */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Carts
+ *   description: The carts managing API
+ * /carts/cart:
+ *   post:
+ *     summary: Create a new cart
+ *     tags: [carts]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Cart'
+ *     responses:
+ *       200:
+ *         description: The created cart.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Cart'
+ *       500:
+ *         description: Some server error
+ *
+ */
+
+router.post("/cart", async (req, res) => {
   const {
     productId,
     title,
@@ -53,5 +125,7 @@ router.post("/Cart", async (req, res) => {
     res.status(500).send("Internal Server Error!");
   }
 });
+
+
 
 module.exports = router;

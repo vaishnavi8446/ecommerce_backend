@@ -5,6 +5,121 @@ const router = express.Router();
 
 const User = require("../models/user");
 
+
+//swagger fo register api
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Register:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *         - isAdmin
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the book
+ *         name:
+ *           type: string
+ *           description: Name of user
+ *         email:
+ *           type: string
+ *           description: email
+ *         password:
+ *            type: string
+ *         isAdmin:
+ *           type: boolean
+ *           description: isAdmin
+ *         createdAt:
+ *           type: string
+ *           format: date
+ *           description: The date in which user was added
+ *       example:
+ *         id: 64d4e6b33a3c17c1425cb907
+ *         name: Vaishnavi Ambolkar
+ *         email: Vaishnavi123@gmail.com
+ *         password: Vaishu@022
+ *         isAdmin: false
+ *         createdAt: 2020-03-10T04:05:06.157Z
+ */
+
+
+//swagger for login api
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Login:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the book
+ *         email:
+ *           type: string
+ *           description: email
+ *         password:
+ *            type: string
+ *       example:
+ *         id: 64d4e6b33a3c17c1425cb907
+ *         name: Vaishnavi Ambolkar
+ *         email: Vaishnavi123@gmail.com
+ *         password: Vaishu@022
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Users API
+ * /users/register:
+ *   post:
+ *     summary: Register a new User
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Register'
+ *     responses:
+ *       200:
+ *         description: The created book.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Register'
+ *       500:
+ *         description: Some server error
+ * /users/login:
+ *   post:
+ *     summary: Login User
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Login'
+ *     responses:
+ *       200:
+ *         description: Login Successful!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Login'
+ *       500:
+ *         description: Some server error
+ *
+ */
+
+
 //1.To register on the platform - using email and password  -seller & buyer
 
 router.post("/register", async (req, res) => {
@@ -37,6 +152,9 @@ router.post("/register", async (req, res) => {
     });
   }
 });
+
+
+
 
 // 2.login through the platform using email and password -buyer & seller
 
