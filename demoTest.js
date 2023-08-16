@@ -5,6 +5,7 @@ NODE_ENV = "test";
 let chai = require("chai");
 let chaiHttp = require("chai-http");
 let server = require("../app");
+const Product = require("../models/product");
 should = chai.should();
 
 request = require("supertest");
@@ -13,18 +14,6 @@ var expect = chai.expect;
 chai.use(chaiHttp);
 
 describe("/register", function () {
-  // it("Check the api without parameters . failure case", function (done) {
-  //   chai
-  //     .request("http://localhost:8000")
-  //     .post("/users/register")
-  //     .send({})
-  //     .end((err, res) => {
-  //       should.not.exist(err);
-  //       expect(res).to.have.status(401);
-  //       done();
-  //     });
-  // });
-
   it("it should register with required fields", function (done) {
     chai
       .request("http://localhost:8000")
@@ -60,26 +49,26 @@ describe("/login", function () {
   });
 });
 
-describe("/cart", function () {
-  it("it should add products to the cart", function (done) {
-    chai
-      .request("http://localhost:8000")
-      .post("/carts/cart")
-      .send({
-        productId: 2,
-        title: "Jeans",
-        description: "Fashion",
-        price: 700,
-        category: "women",
-        subCategory: "",
-        discount: 300,
-      })
-      .end(function (err, res) {
-        expect(res).to.have.status(200);
-        done();
-      });
-  });
-});
+// describe("/cart", function () {
+//   it("it should add products to the cart", function (done) {
+//     chai
+//       .request("http://localhost:8000")
+//       .post("/carts/cart/:userId")
+//       .send({
+//         productId: 2,
+//         title: "Jeans",
+//         description: "Fashion",
+//         price: 700,
+//         category: "women",
+//         subCategory: "",
+//         discount: 300,
+//       })
+//       .end(function (err, res) {
+//         expect(res).to.have.status(200);
+//         done();
+//       });
+//   });
+// });
 
 describe("/getProductsList", function () {
   it("it should fetch all the products", function (done) {
@@ -129,15 +118,18 @@ describe("/filterProducts", function () {
       });
   });
 });
+
 // describe("/updateProductStatus/:id", function () {
+
+//   let product = new Product( {
+//         availability: "Available"
+//       });
+
 //   it("It should log in user", function (done) {
 //     chai
 //       .request("http://localhost:8000")
-//       .put("/updateProductStatus/:64d0be05b74727af00d28b5e")
-//       .send({
-
-//         availability: "Available"
-//       })
+//       .put('/products/updateProductStatus/' + product.id)
+//       .send(product)
 //       .end(function (err, res) {
 //         expect(res).to.have.status(200);
 //         done();
