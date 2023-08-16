@@ -3,16 +3,110 @@ const router = express.Router();
 const xlsx = require("xlsx");
 
 const fs = require("fs");
+var multer = require("multer");
 
 const Product = require("../models/product");
+let xlsxtojson = require("xlsx-to-json"),
+  xlstojson = require("xls-to-json");
 
 const filePath = "C:/Users/Dell/Desktop/ecommerce_backend/file/test.xlsx";
+//
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Register:
+ *       type: object
+ *       required:
+ *         - title
+ *         - description
+ *         - password
+ *         - isAdmin
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the book
+ *         title:
+ *           type: string
+ *           description: title
+ *         description:
+ *           type: string
+ *           description: description
+ *         category:
+ *            type: string
+ *         isAdmin:
+ *           type: boolean
+ *           description: isAdmin
+ *         quantity:
+ *           type: string
+ *           description: quantity
+ *         createdBy:
+ *           type: string
+ * 
+ *       example:
+ *         id: 64d4e6b33a3c17c1425cb907
+ *         name: Vaishnavi Ambolkar
+ *         email: Vaishnavi123@gmail.com
+ *         password: Vaishu@022
+ *         isAdmin: false
+ *         createdAt: 2020-03-10T04:05:06.157Z
+ */
+
+
+//swagger schema for updateProductStatus API
+
+//swagger for updateStatus api
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     uProduct:
+ *       type: object
+ *       required:
+ *         - availability
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the book
+ *         availability:
+ *           type: string
+ *           description: availability
+ *       example:
+ *         availability: Out of service
+ */
+
 
 /**
  * @swagger
  * tags:
  *   name: Products
  *   description: The products managing API
+ * 
+ * /products/updateProductStatus/{id}:
+ *   put:
+ *     summary: updateProductStatus
+ *     tags: [Products]
+ *     parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/uProduct'
+ *     responses:
+ *       200:
+ *         description: Product updated successfully!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/uProduct'
+ *       500:
+ *         description: Some server error
+ * 
+ * 
  * /products/getProductsList:
  *   get:
  *     summary: getProductsList
@@ -40,7 +134,7 @@ const filePath = "C:/Users/Dell/Desktop/ecommerce_backend/file/test.xlsx";
  *               $ref: '#/components/schemas/Product'
  *       500:
  *         description: Some server error
- * 
+ *
  * /products/stockList:
  *   get:
  *     summary: stockList
@@ -48,6 +142,20 @@ const filePath = "C:/Users/Dell/Desktop/ecommerce_backend/file/test.xlsx";
  *     responses:
  *       200:
  *         description: Fetched left stock list successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       500:
+ *         description: Some server error
+ *
+ * /products/filterProducts?category=electronics:
+ *    get:
+ *     summary: filterProducts
+ *     tags: [Products]
+ *     responses:
+ *       200:
+ *         description: Filter products displayed successfully!
  *         content:
  *           application/json:
  *             schema:
@@ -278,4 +386,86 @@ router.get("/stockList", async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * tags:
+ *   name: Products
+ *   description: The products managing API
+ * /products/uploadFile:
+ * post:
+ *    summary: Uploads a file.
+ *    operationId: bulkUpload
+ *    consumes:
+ *      - multipart/form-data
+ *    parameters:
+ *      - in: formData
+ *        name: uploadFile
+ *        type: file
+ *        description: The file to upload.   
+ *    responses:
+ *        200:
+ *          description: "File Uploaded"
+ *        500:
+ *          description: Some server error
+ */
+
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/excelUploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+var upload = multer({ storage: storage });
+
+//2. to upload products in bulk using excel -seller
+
+router.post("/uploadFile", upload.single("uploadfile"), function (req, res, next) {
+  // req.file is the `profile-file` file
+  // req.body will hold the text fields, if there were any
+  //importExcelData2MongoDB("./public" + "/excelUploads/" + req.file.filename);
+  let excel2json;
+  let response = "Files uploaded successfully!";
+
+  res.send(response);
+  if (!req.file) {
+    res.json({ error_code: 404, err_desc: "File not found!" });
+    return;
+  }
+
+  if (
+    req.file.originalname.split(".")[
+      req.file.originalname.split(".").length - 1
+    ] === "xlsx"
+  ) {
+    excel2json = xlsxtojson;
+  } else {
+    excel2json = xlstojson;
+  }
+  excel2json(
+    {
+      input: `${req.file.path}`,
+      output: "output/" + Date.now() + ".json", // output json
+      lowerCaseHeaders: true,
+    },
+    function (err, result) {
+      if (err) {
+        res.json(err);
+      } else {
+        Product.insertMany(result, function (err, res) {
+          if (err) throw err;
+          console.log("Number of documents inserted: " + res);
+          // return res.json({
+          //   status: 200,
+          //   msg: "Products uploaded successfully!",
+          //   result: res,
+          // });
+        });
+      }
+    }
+  );
+});
 module.exports = router;

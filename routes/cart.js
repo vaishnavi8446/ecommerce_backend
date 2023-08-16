@@ -6,13 +6,16 @@ const Cart = require("./../models/cart");
  * @swagger
  * components:
  *   schemas:
- *     Cart:
+ *     cProduct:
  *       type: object
  *       required:
  *         - productId
  *         - title
  *         - description
  *       properties:
+ *         id:
+ *           type: string
+ *           description: The auto-generated id of the book
  *         productId:
  *           type: number
  *           description: Product id of the cart
@@ -24,7 +27,7 @@ const Cart = require("./../models/cart");
  *         description:
  *            type: string
  *            description: Description of the product
- *            example:Phone-8gb
+ *            example:8gb
  *         price:
  *           type: number
  *           description: price of the product
@@ -45,36 +48,50 @@ const Cart = require("./../models/cart");
  *           type: string
  *           format: date
  *           description: The date in which cart was added
-  */
+ *       example:
+ *         productId:2
+ *         title: Jeans
+ *         description: Fashion
+ *         price: 700
+ *         category: women
+ *         subCategory:
+ *         discount: 300
+ */
 
 /**
  * @swagger
  * tags:
- *   name: Carts
- *   description: The carts managing API
- * /carts/cart:
+ *   name: Products
+ *   description: The products managing API
+ * 
+ * /carts/cart/{userId}:
  *   post:
- *     summary: Create a new cart
- *     tags: [carts]
+ *     summary: Create a new cart!
+ *     tags: [Carts]
+ *     parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Cart'
+ *             $ref: '#/components/schemas/cProduct'
  *     responses:
  *       200:
- *         description: The created cart.
+ *         description: The cart created successfully!
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Cart'
+ *               $ref: '#/components/schemas/cProduct'
  *       500:
  *         description: Some server error
- *
+ * 
  */
 
-router.post("/cart", async (req, res) => {
+
+router.post("/cart/:userId", async (req, res) => {
   const {
     productId,
     title,
@@ -85,8 +102,10 @@ router.post("/cart", async (req, res) => {
     discount,
   } = req.body;
 
-  const userId = "64d20b9a9a6779f427a2d311"; //log in user id --take userId from logged in user
+  
+
   try {
+    const userId = req.params.userId;
     let cart = await Cart.findOne({ userId });
     if (cart) {
       const newCart = await Cart.create({
@@ -104,19 +123,18 @@ router.post("/cart", async (req, res) => {
         ],
       });
 
-      let pRes = newCart.products.push({
-        productId,
-        title,
-        description,
-        price,
-        category,
-        subCategory,
-        discount,
-      });
+      // let pRes = newCart.products.push({
+      //   productId,
+      //   title,
+      //   description,
+      //   price,
+      //   category,
+      //   subCategory,
+      //   discount,
+      // });
 
       return res.status(200).send({
         msg: "Product added to Cart!",
-        count: pRes,
         result: newCart,
       });
     }
@@ -125,7 +143,5 @@ router.post("/cart", async (req, res) => {
     res.status(500).send("Internal Server Error!");
   }
 });
-
-
 
 module.exports = router;

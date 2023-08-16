@@ -38,12 +38,10 @@ const User = require("../models/user");
  *           format: date
  *           description: The date in which user was added
  *       example:
- *         id: 64d4e6b33a3c17c1425cb907
  *         name: Vaishnavi Ambolkar
  *         email: Vaishnavi123@gmail.com
  *         password: Vaishu@022
  *         isAdmin: false
- *         createdAt: 2020-03-10T04:05:06.157Z
  */
 
 
@@ -67,8 +65,6 @@ const User = require("../models/user");
  *         password:
  *            type: string
  *       example:
- *         id: 64d4e6b33a3c17c1425cb907
- *         name: Vaishnavi Ambolkar
  *         email: Vaishnavi123@gmail.com
  *         password: Vaishu@022
  */
